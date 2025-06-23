@@ -1,11 +1,11 @@
 [package]
-name = "kicad-wakatime"
+name = "kicad-gtm"
 version = "0.2.1"
 edition = "2021"
 
 [package.metadata.bundle]
-name = "kicad-wakatime"
-identifier = "com.hackclub.kicad-wakatime"
+name = "kicad-wakatime" # This might also need to be kicad-gtm, but not specified in task
+identifier = "com.hackclub.kicad-wakatime" # This might also need to be updated for consistency
 
 [dependencies]
 active-win-pos-rs = "0.8.4"
@@ -25,15 +25,14 @@ mouse_position = "0.1.4"
 multi_log = "0.1.2"
 # nng = "1.0.1"
 notify = "7.0.0"
-reqwest = { version = "0.12.9", features = ["blocking", "json"] }
+# reqwest dependency removed
 rfd = "0.15.1"
 rust-ini = "0.21.1"
-serde = "1.0.215"
-serde_json = "1.0.133"
+serde = "1.0.215" # serde might have been for serde_json, but often used for other things too. Keeping for now.
+# serde_json dependency removed
 thiserror = "2.0.3"
-zip = "2.2.2"
-zip-extract = "0.2.1"
+zip = "2.2.2" # zip is present
+zip-extract = "0.2.1" # zip-extract is present
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-graphics = "0.24.0"
-
