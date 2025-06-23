@@ -9,7 +9,7 @@ use eframe::egui::{self};
 // use cocoa::appkit::NSApp;
 // use cocoa::appkit::NSApplication;
 // use cocoa::appkit::NSApplicationActivationPolicy::NSApplicationActivationPolicyRegular;
-use kicad_wakatime::{ui::Ui, Plugin}; // kicad_wakatime will be the crate name
+use kicad_gtm::{ui::Ui, Plugin}; // Updated crate name
 use clap::Parser;
 use log::error;
 use log::info;
