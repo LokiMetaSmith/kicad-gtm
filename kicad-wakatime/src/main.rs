@@ -13,7 +13,7 @@ use kicad_gtm::{ui::Ui, Plugin}; // Updated crate name
 use clap::Parser;
 use log::error;
 use log::info;
-// use log::warn;
+use log::warn; // Added for log::warn!
 use multi_log::MultiLogger;
 
 /// GTM plugin for KiCAD (formerly WakaTime)
@@ -78,7 +78,8 @@ fn main() -> Result<(), anyhow::Error> {
     let screen_capture_access = core_graphics::access::ScreenCaptureAccess::default();
     plugin.has_screen_capture_access = screen_capture_access.preflight();
     if !plugin.has_screen_capture_access {
-      screen_capture_access.request();
+      // screen_capture_access.request(); // Commented out to prevent potential hang
+      log::warn!("Screen capture access not granted. Active window detection may fail on macOS. Please grant permissions in System Settings.");
     }
   }
 

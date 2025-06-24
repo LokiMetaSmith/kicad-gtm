@@ -6,21 +6,9 @@
   "identifier": "com.github.LokiMetaSmith.kicad-gtm",
   "type": "plugin",
   "author": {
-    "name": "LokiMetaSmith (fork), Original by Hack Club & WakaTime contributors",
-    "contact": {
-      "web": "https://github.com/LokiMetaSmith/kicad-gtm"
-    }
-  },
-  "maintainer": {
-    "name": "LokiMetaSmith",
-    "contact": {
-      "web": "https://github.com/LokiMetaSmith/kicad-gtm"
-    }
+    "name": "LokiMetaSmith (fork), Original by Hack Club & WakaTime contributors"
   },
   "license": "MIT",
-  "resources": {
-    "homepage": "https://github.com/LokiMetaSmith/kicad-gtm"
-  },
   "versions": [
     {
       "version": "0.1.0",
