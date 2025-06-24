@@ -25,11 +25,7 @@
     {
       "version": "0.1.0",
       "status": "testing",
-      "kicad_version": "8.0",
-      "download_sha256": "WILL_BE_REPLACED_ON_RELEASE_IF_SUBMITTED_TO_REPO",
-      "download_size": 0,
-      "download_url": "WILL_BE_REPLACED_ON_RELEASE_IF_SUBMITTED_TO_REPO",
-      "install_size": 0
+      "kicad_version": "8.0"
     }
   ]
 }
