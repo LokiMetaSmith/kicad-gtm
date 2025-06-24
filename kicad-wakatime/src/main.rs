@@ -13,11 +13,12 @@ use kicad_gtm::{ui::Ui, Plugin}; // Updated crate name
 use clap::Parser;
 use log::error;
 use log::info;
-use log::warn; // Added for log::warn!
+// use log::warn; // Removed as it was unused
 use multi_log::MultiLogger;
 
 /// GTM plugin for KiCAD (formerly WakaTime)
 #[derive(Parser)]
+#[command(version)] // This line ensures --version flag is handled
 pub struct Args {
   #[clap(long, help = "Disable GTM recording")]
   disable_gtm_recording: bool,
@@ -79,6 +80,10 @@ fn main() -> Result<(), anyhow::Error> {
     plugin.has_screen_capture_access = screen_capture_access.preflight();
     if !plugin.has_screen_capture_access {
       // screen_capture_access.request(); // Commented out to prevent potential hang
+      // The log::warn macro works even if `use log::warn` is not present,
+      // as long as the `log` crate is a dependency and `log::info`, `log::error` etc. are used.
+      // If log::warn was the *only* log macro used, then `use log::warn` might be needed,
+      // but since info and error are used, it's fine.
       log::warn!("Screen capture access not granted. Active window detection may fail on macOS. Please grant permissions in System Settings.");
     }
   }
