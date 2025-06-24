@@ -87,21 +87,49 @@ impl Plugin {
       self.first_iteration_finished = true;
       return Ok(());
     };
-    // deal with unsaved files
+
+    // Check for KiCad placeholder titles
+    if project == "[no schematic loaded]" || project == "[no pcb loaded]" {
+        debug!("KiCad placeholder title detected: {}", project);
+        self.first_iteration_finished = true;
+        return Ok(());
+    }
+
+    // deal with unsaved files (asterisk prefix)
     if project.starts_with("*") {
       project = &project[1..project.len()];
     }
-    // deal with hierarchical schematics
-    project = match (project.find("["), project.find("]")) {
-      (Some(left), Some(_right)) => &project[0..left-1],
-      _ => project,
-    };
+
+    debug!("Original project part from title: {}", project);
+    // Deal with hierarchical schematics like "ProjectName [/SheetName]" or "ProjectName [SheetName]"
+    // We want to extract "ProjectName"
+    if let Some(bracket_pos) = project.rfind(" [") { // Look for " ["
+        project = &project[0..bracket_pos];
+    } else if let Some(bracket_pos) = project.find('[') { // If no " [" look for just "["
+        // If '[' is at the start, this is not a typical hierarchical sheet path part we want to strip.
+        // Or it could be a project name that starts with '[', e.g. "[OldProject]"
+        // If bracket_pos is 0, slicing `&project[0..0]` is an empty string, which is not ideal.
+        // Let's only strip if the bracket is not at the beginning.
+        if bracket_pos > 0 {
+            project = &project[0..bracket_pos];
+        }
+    }
+    debug!("Processed project part for filename: {}", project);
+
     let filename = match editor {
       "Schematic Editor" => format!("{project}.kicad_sch"),
       "PCB Editor" => format!("{project}.kicad_pcb"),
-      _ => String::new(),
+      _ => String::new(), // If editor is unknown, filename will be empty
     };
+
+    if filename.is_empty() {
+        debug!("Unknown editor type or invalid project name for filename generation: editor='{}', project='{}'", editor, project);
+        self.first_iteration_finished = true;
+        return Ok(());
+    }
+
     let Some(_full_path) = self.get_full_path(filename.clone()) else {
+      debug!("Full path not found for filename: {}", filename);
       self.first_iteration_finished = true;
       return Ok(());
     };
@@ -153,13 +181,12 @@ impl Plugin {
     self.full_paths.get(&filename)
   }
   pub fn recursively_add_full_paths(&mut self, path: PathBuf) -> Result<(), anyhow::Error> {
-    for path in fs::read_dir(path)? {
-      let path = path.unwrap().path();
-      if path.is_dir() { self.recursively_add_full_paths(path.clone())?; };
-      if !path.is_file() { continue; };
-      let file_name = path.file_name().unwrap().to_str().unwrap();
-      // let file_stem = path.file_stem().unwrap().to_str().unwrap();
-      let Some(file_extension) = path.extension() else { continue; };
+    for path_entry in fs::read_dir(path)? { // Renamed path to path_entry to avoid conflict
+      let entry_path = path_entry.unwrap().path(); // Renamed path to entry_path
+      if entry_path.is_dir() { self.recursively_add_full_paths(entry_path.clone())?; };
+      if !entry_path.is_file() { continue; };
+      let file_name = entry_path.file_name().unwrap().to_str().unwrap();
+      let Some(file_extension) = entry_path.extension() else { continue; };
       let file_extension = file_extension.to_str().unwrap();
       if file_extension == "kicad_sch" || file_extension == "kicad_pcb" {
         if self.full_paths.contains_key(file_name) {
@@ -170,7 +197,7 @@ impl Plugin {
         }
         self.full_paths.insert(
           file_name.to_string(),
-          path
+          entry_path // Use entry_path here
         );
       }
     }
@@ -205,6 +232,10 @@ impl Plugin {
       .collect::<Vec<_>>();
     backups.sort_by_key(|x| x.metadata().unwrap().created().unwrap());
     let backups_count = backups.len();
+    if backups_count < 2 { // Check to prevent panic
+        info!("Not enough backups to compare for {filename}.");
+        return Ok(());
+    }
     let mut v1: Vec<u8> = vec![];
     let mut v2: Vec<u8> = vec![];
     let p1 = &backups[backups_count - 1];
@@ -247,13 +278,18 @@ impl Plugin {
     if recv.is_ok() {
       if let Ok(Ok(notify::Event { kind, paths, attrs: _ })) = recv {
         let path = paths[0].clone();
-        let is_backup = path.parent().unwrap().to_str().unwrap().ends_with("-backups");
+        if path.parent().is_none() { return Ok(());} // Guard against panic
+        let parent_str = path.parent().unwrap().to_str().unwrap_or_default(); // Avoid panic
+        let is_backup = parent_str.ends_with("-backups");
+
         if path == self.full_path {
           info!("File saved!");
           self.maybe_record_gtm_activity(self.filename.clone(), true)?;
         } else if is_backup && kind.is_create() {
           info!("New backup created!");
-          self.look_at_backups_of_filename(self.filename.clone(), path.parent().unwrap().to_path_buf())?;
+          if let Some(parent_path) = path.parent() { // Ensure parent path exists
+             self.look_at_backups_of_filename(self.filename.clone(), parent_path.to_path_buf())?;
+          }
         }
       }
     }
@@ -297,10 +333,10 @@ impl Plugin {
           Some(path_buf) => self.full_path = path_buf.to_path_buf(),
           None => {
               error!("Could not find full path for filename: {}", filename);
-              return Ok(()); // Or handle error appropriately
+              return Ok(());
           }
       }
-      self.record_gtm_activity()?; // Updated call
+      self.record_gtm_activity()?;
     } else {
       debug!("Not recording GTM activity (no conditions met)");
     }
@@ -325,7 +361,7 @@ impl Plugin {
 
     let mut cmd = std::process::Command::new("gtm");
     cmd.arg("record");
-    cmd.arg(&full_path_string); // Pass the unquoted string; Command::new should handle OS-specific arg quoting.
+    cmd.arg(&full_path_string);
 
     let cli_output = cmd.output();
 
@@ -362,6 +398,6 @@ impl Plugin {
   /// Return the path to the .kicad-wakatime.cfg file.
   pub fn kicad_wakatime_cfg_path(&self) -> PathBuf {
     let home_dir = home::home_dir().expect("Unable to get your home directory!");
-    home_dir.join(".kicad-wakatime.cfg")
+    home_dir.join(".kicad-wakatime.cfg") // This will likely be renamed to .kicad-gtm.cfg later
   }
 }
