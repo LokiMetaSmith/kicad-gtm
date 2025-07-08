@@ -1,3 +1,4 @@
+
 # Git Time Metric (GTM) Plugin for KiCad
 
 **kicad-gtm** is a plugin that integrates [KiCad](https://www.kicad.org/) with [Git Time Metric (GTM)](https://github.com/git-time-metric/gtm). It allows you to track time spent on your KiCad projects locally, with data stored directly in your git repository's notes.
@@ -8,6 +9,7 @@ This plugin is currently under development. While functional, it should be consi
 ## Installation
 
 On all platforms:
+
 
 1.  **Install GTM CLI:**
     Follow the installation instructions for the GTM command-line interface from the official GTM repository: [https://github.com/git-time-metric/gtm](https://github.com/git-time-metric/gtm). Ensure `gtm` is correctly installed and accessible in your system's PATH.
@@ -125,16 +127,17 @@ The KiCad version compatibility notes from the original WakaTime plugin may stil
 <details>
 <summary>Downloading KiCAD Nightly (If needed for other reasons)</summary>
 
-If you are a Windows user, you can download KiCAD 8.99 [here](https://downloads.kicad.org/kicad/windows/explore/nightlies) (pick an "x86_64.exe".)
 
-If you are a macOS user, you can download KiCAD 8.99 [here](https://downloads.kicad.org/kicad/macos/explore/nightlies) (pick a ".dmg").
+If you are a Windows user, you can download KiCAD 9 [here](https://downloads.kicad.org/kicad/windows/) (pick an "x86_64.exe".)
 
-If you are an Ubuntu user, you can install KiCAD 8.99 using the following shell commands:
+If you are a macOS user, you can download KiCAD 8.99 [here](https://downloads.kicad.org/kicad/macos/) (pick a ".dmg").
+
+If you are an Ubuntu user, you can install KiCAD 9 using the following shell commands:
 
 ```shell
-sudo add-apt-repository --yes ppa:kicad/kicad-dev-nightly
+sudo add-apt-repository --yes ppa:kicad/kicad-9.0-releases
 sudo apt update
-sudo apt install kicad-nightly
+sudo apt install --install-recommends kicad
 ```
 
 </details>
@@ -142,3 +145,9 @@ sudo apt install kicad-nightly
 ## Issues
 
 If `kicad-gtm` is not doing what you expect, please [open an issue](https://github.com/LokiMetaSmith/kicad-gtm/issues) on this repository's issue tracker. Please provide details about your operating system, KiCad version, `kicad-gtm` plugin version, and steps to reproduce the issue.
+=======
+If kicad-gtm is not doing what you expect, please [open an issue](https://github.com/LokiMetaSmith/kicad-gtm/issues).
+
+The bug report template will ask you for a magic word to confirm that you've read this README.\
+The magic word is **"dreadnought"**.
+
