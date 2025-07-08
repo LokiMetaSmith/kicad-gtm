@@ -1,46 +1,47 @@
-# kicad-wakatime
+# kicad-gtm
 
-**kicad-wakatime** is a WakaTime plugin for [KiCAD](https://www.kicad.org/).
+**kicad-gtm** is a GTM plugin for [KiCAD](https://www.kicad.org/).
+It's based on [kicad-wakatime](https://github.com/hackclub/kicad-wakatime/issues).
+
 
 ## Disclaimer
 As of June 2025, **this plugin is likely not suitable for accurate time tracking**.\
-This is due to a couple of critical bugs affecting the core behavior of the latest release ([1](https://github.com/hackclub/kicad-wakatime/issues/16), [2](https://github.com/hackclub/kicad-wakatime/issues/17)).\
+It's highly experimental and is not ready for produciton
 **Proceed at your own risk.**
 
 ## Installation
 
 On all platforms:
-1. Download the latest release of kicad-wakatime from the releases section. [Click here for downloads.](https://github.com/hackclub/kicad-wakatime/releases)
-2. Open kicad-wakatime and fill out the settings.
+1. Download the latest release of kicad-gtm from the releases section. [Click here for downloads.](https://github.com/LokiMetaSmith/kicad-gtm/releases)
+2. Open kicad-gtm and fill out the settings.
 3. Start designing!
 
-If you know what you're doing, you can build kicad-wakatime from the main branch instead. This requires an up-to-date version of [CMake](https://cmake.org) and [protoc](https://grpc.io/docs/protoc-installation).\
+If you know what you're doing, you can build kicad-gtm from the main branch instead. This requires an up-to-date version of [CMake](https://cmake.org) and [protoc](https://grpc.io/docs/protoc-installation).\
 The code in the main branch should be considered unstable, as some features may still be in progress between releases.
 
 ## Note
-Prior to [version 0.2.0](https://github.com/hackclub/kicad-wakatime/releases/tag/0.2.0), KiCAD 8.99 nightly or greater was required in order to use kicad-wakatime. This is no longer required, and new users should be using KiCAD 8.0.7 stable instead.\
-However, users who have already saved their project using KiCAD 8.99 or greater **cannot** downgrade to an older version of KiCAD.
+
 
 <details>
-<summary>Downloading KiCAD 8.99</summary>
+<summary>Downloading KiCAD 9</summary>
 
-If you are a Windows user, you can download KiCAD 8.99 [here](https://downloads.kicad.org/kicad/windows/explore/nightlies) (pick an "x86_64.exe".)
+If you are a Windows user, you can download KiCAD 9 [here](https://downloads.kicad.org/kicad/windows/) (pick an "x86_64.exe".)
 
-If you are a macOS user, you can download KiCAD 8.99 [here](https://downloads.kicad.org/kicad/macos/explore/nightlies) (pick a ".dmg").
+If you are a macOS user, you can download KiCAD 8.99 [here](https://downloads.kicad.org/kicad/macos/) (pick a ".dmg").
 
-If you are an Ubuntu user, you can install KiCAD 8.99 using the following shell commands:
+If you are an Ubuntu user, you can install KiCAD 9 using the following shell commands:
 
 ```shell
-sudo add-apt-repository --yes ppa:kicad/kicad-dev-nightly
+sudo add-apt-repository --yes ppa:kicad/kicad-9.0-releases
 sudo apt update
-sudo apt install kicad-nightly
+sudo apt install --install-recommends kicad
 ```
 
 </details>
 
 ## Issues
 
-If kicad-wakatime is not doing what you expect, please [open an issue](https://github.com/hackclub/kicad-wakatime/issues).
+If kicad-gtm is not doing what you expect, please [open an issue](https://github.com/LokiMetaSmith/kicad-gtm/issues).
 
 The bug report template will ask you for a magic word to confirm that you've read this README.\
 The magic word is **"dreadnought"**.
