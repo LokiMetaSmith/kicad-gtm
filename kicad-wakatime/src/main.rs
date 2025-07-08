@@ -1,3 +1,5 @@
+//main.rs
+
 #![windows_subsystem = "windows"]
 
 use std::{env, fs::File};
@@ -7,22 +9,19 @@ use eframe::egui::{self};
 // use cocoa::appkit::NSApp;
 // use cocoa::appkit::NSApplication;
 // use cocoa::appkit::NSApplicationActivationPolicy::NSApplicationActivationPolicyRegular;
-use kicad_wakatime::{ui::Ui, Plugin};
+use kicad_gtm::{ui::Ui, Plugin}; // Updated crate name
 use clap::Parser;
-use log::debug;
 use log::error;
 use log::info;
-// use log::warn;
+// use log::warn; // Removed as it was unused
 use multi_log::MultiLogger;
 
-/// WakaTime plugin for KiCAD
+/// GTM plugin for KiCAD (formerly WakaTime)
 #[derive(Parser)]
+#[command(version)] // This line ensures --version flag is handled
 pub struct Args {
-  #[clap(long)]
-  disable_heartbeats: bool,
-  #[clap(long)]
-  /// Redownload WakaTime CLI
-  redownload: bool,
+  #[clap(long, help = "Disable GTM recording")]
+  disable_gtm_recording: bool,
 }
 
 fn main() -> Result<(), anyhow::Error> {
@@ -33,8 +32,8 @@ fn main() -> Result<(), anyhow::Error> {
   let egui_logger = Box::new(egui_logger::builder().build());
   // need to find path like this because Plugin will not have been made yet
   let home_dir = home::home_dir().expect("Unable to get your home directory!");
-  let kicad_wakatime_log_path = home_dir.join(".kicad-wakatime.log");
-  let target = Box::new(File::create(kicad_wakatime_log_path)?);
+  let kicad_gtm_log_path = home_dir.join(".kicad-gtm.log"); // Updated log file name
+  let target = Box::new(File::create(kicad_gtm_log_path)?);
   // env_logger
   let env_logger = Box::new(
     env_logger::Builder::new()
@@ -57,7 +56,8 @@ fn main() -> Result<(), anyhow::Error> {
     .expect("Could not initialize multi logger!");
   log_panics::init();
 
-  debug!("(os, arch) = {:?}", kicad_wakatime::env_consts());
+  // This line is removed as env_consts was removed from lib.rs
+  // debug!("(os, arch) = {:?}", kicad_wakatime::env_consts());
 
   let (tx, rx) = std::sync::mpsc::channel::<Result<notify::Event, notify::Error>>();
 
@@ -68,10 +68,9 @@ fn main() -> Result<(), anyhow::Error> {
 
   // initialization
   let mut plugin = Plugin::new(
-    args.disable_heartbeats,
-    args.redownload,
+    args.disable_gtm_recording, // Updated argument
   );
-  info!("Initializing kicad-wakatime...");
+  info!("Initializing kicad-gtm..."); // Updated info message
   plugin.tx = Some(tx);
   plugin.rx = Some(rx);
 
@@ -80,18 +79,24 @@ fn main() -> Result<(), anyhow::Error> {
     let screen_capture_access = core_graphics::access::ScreenCaptureAccess::default();
     plugin.has_screen_capture_access = screen_capture_access.preflight();
     if !plugin.has_screen_capture_access {
-      screen_capture_access.request();
+      // screen_capture_access.request(); // Commented out to prevent potential hang
+      // The log::warn macro works even if `use log::warn` is not present,
+      // as long as the `log` crate is a dependency and `log::info`, `log::error` etc. are used.
+      // If log::warn was the *only* log macro used, then `use log::warn` might be needed,
+      // but since info and error are used, it's fine.
+      log::warn!("Screen capture access not granted. Active window detection may fail on macOS. Please grant permissions in System Settings.");
     }
   }
 
   // settings population
   plugin.load_config()?;
-  plugin.projects_folder = plugin.get_projects_folder().to_str().unwrap().to_string();
-  plugin.api_key = plugin.get_api_key();
-  plugin.api_url = plugin.get_api_url();
+  plugin.projects_folder = plugin.get_projects_folder().to_str().unwrap_or_default().to_string();
+  // These lines are removed as api_key and api_url fields and methods were removed from Plugin
+  // plugin.api_key = plugin.get_api_key();
+  // plugin.api_url = plugin.get_api_url();
 
   let _ = eframe::run_simple_native(
-    "kicad-wakatime ^_^",
+    "kicad-gtm ^_^", // Updated application title
     native_options,
     move |ctx, _frame| {
       // have to handle the error case this way since the callback does not return Result

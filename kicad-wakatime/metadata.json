@@ -1,0 +1,19 @@
+{
+  "$schema": "https://go.kicad.org/pcm/schemas/v1",
+  "name": "Git Time Metric (GTM) for KiCad",
+  "description": "KiCad plugin for time tracking with Git Time Metric.",
+  "description_full": "This plugin integrates KiCad with Git Time Metric (GTM), allowing you to track time spent on your KiCad projects. Activity is recorded by the gtm command-line tool and stored locally in your Git repository notes. Ensure gtm CLI is installed and your project is initialized with `gtm init`.",
+  "identifier": "com.github.LokiMetaSmith.kicad-gtm",
+  "type": "plugin",
+  "author": {
+    "name": "LokiMetaSmith (fork), Original by Hack Club & WakaTime contributors"
+  },
+  "license": "MIT",
+  "versions": [
+    {
+      "version": "0.1.0",
+      "status": "testing",
+      "kicad_version": "8.0"
+    }
+  ]
+}
